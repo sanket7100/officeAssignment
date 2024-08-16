@@ -20,22 +20,22 @@ public class BookService {
     private final BookRepository bookRepository;
     private final ModelMapper mapper;
 
-    public BookDto saveBook(BookDto bookDto){
+    public void saveBook(BookDto bookDto){
         if(bookRepository.findById(bookDto.getBookId()).isPresent()) {
             throw new BookAlreadyExistsException("Book is already present with ID : " + bookDto.getBookId());
         }
-        return mapper.map(bookRepository.save(mapper.map(bookDto,BookEntity.class)), BookDto.class);
+        mapper.map(bookRepository.save(mapper.map(bookDto,BookEntity.class)), BookDto.class);
     }
 
-    public List<BookDto> getAllBooks(Integer pageno){
-        Pageable page = PageRequest.of(pageno, 5);
+    public List<BookDto> getAllBooks(Integer pageNo){
+        Pageable page = PageRequest.of(pageNo, 5);
         List<BookEntity> books = bookRepository.findAll(page).getContent();
         return books.stream().map(book -> mapper.map(book, BookDto.class)).toList();
     }
 
     public String deleteBook(Integer id){
         bookRepository.deleteById(id);
-        return "Book deleted sucessufully...";
+        return "Book deleted successfully...";
     }
 
     public BookDto getBookById(Integer id){
@@ -53,10 +53,9 @@ public class BookService {
         if(optional.isPresent()) {
             bookPresent = optional.get();
             bookPresent.setBookName(book.getBookName());
-            bookPresent.setBookAuther(book.getBookAuther());
+            bookPresent.setBookAuthor(book.getBookAuthor());
             bookPresent.setBookPrize(book.getBookPrize());
         }
-
         return mapper.map(bookRepository.save(bookPresent),BookDto.class);
     }
 
@@ -66,9 +65,9 @@ public class BookService {
 
 
     public String saveBooks(List<BookDto> books) {
-        if(books.isEmpty()) throw new BookNotFoundException("Book list is empty");
+        if(books.isEmpty()) throw new BookNotFoundException("Book list cannot empty");
 
         bookRepository.saveAll(books.stream().map(dto->mapper.map(dto,BookEntity.class)).toList());
-        return "Books Saved Successfullyyy";
+        return "Books Saved Successfully...";
     }
 }

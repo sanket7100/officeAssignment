@@ -18,11 +18,11 @@ public class BookDto {
     @NotBlank(message = "Book Name should not be blank")
     private String bookName;
 
-    @NotBlank(message = "Auther Name should not be blank")
-    private String bookAuther;
+    @NotBlank(message = "Author Name should not be blank")
+    private String bookAuthor;
 
-    @Size(min = 0, max = 50, message = "Max limit for discription is 50")
-    private String bookDiscription;
+    @Size(max = 50, message = "Max limit for description is 50")
+    private String bookDescription;
 
     @Min(value = 1, message = "Price should not be zero or less")
     private Double bookPrize;

@@ -19,7 +19,7 @@ public class Controller {
 
     private final BookService bookService;
 
-    @PostMapping("/savebook")
+    @PostMapping("/saveBook")
     public ResponseEntity<String> saveBook(@RequestBody @Valid BookDto book, BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             return ResponseEntity.badRequest().body("Validation violation");
@@ -27,33 +27,34 @@ public class Controller {
         return ResponseEntity.ok("Book saved successfully");
     }
 
-    @GetMapping("/getallbooks/{pageno}")
-    public ResponseEntity<List<BookDto>> getAllBooks(@PathVariable Integer pageno){
-        return ResponseEntity.status(HttpStatus.OK).body(bookService.getAllBooks(pageno));
+    @GetMapping("/getAllBooks/{pageNo}")
+    public ResponseEntity<List<BookDto>> getAllBooks(@PathVariable Integer pageNo){
+        return ResponseEntity.status(HttpStatus.OK).body(bookService.getAllBooks(pageNo));
     }
 
-    @DeleteMapping("/deletebookbyid/{id}")
+    @DeleteMapping("/deleteBookById/{id}")
     public ResponseEntity<String> deleteBook(@PathVariable Integer id){
         return ResponseEntity.ok(bookService.deleteBook(id));
     }
 
-    @GetMapping("/getbookbyid/{bookId}")
+    @GetMapping("/getBookById/{bookId}")
     public ResponseEntity<BookDto> getBookById(@PathVariable Integer bookId){
         return ResponseEntity.ok().body(bookService.getBookById(bookId));
     }
 
-    @PutMapping("/updatebook")
+    @PutMapping("/updateBook")
     public ResponseEntity<String> updateBook(@RequestBody BookDto book){
-        bookService.updateBook(book);
-        return ResponseEntity.ok().body("Book Updated Succefully!");
+        if(bookService.updateBook(book)!=null) return ResponseEntity.ok().body("Book Updated Successfully!");
+
+        return ResponseEntity.badRequest().body("Something went wrong........Try again later");
     }
 
-    @GetMapping("/getbookbytitle/{title}")
+    @GetMapping("/getBookByTitle/{title}")
     public ResponseEntity<List<BookEntity>> getBookByTitle(@PathVariable String title){
         return ResponseEntity.status(HttpStatus.OK).body(bookService.getBookByTitle(title));
     }
 
-    @PostMapping("/savebooks")
+    @PostMapping("/saveBooks")
     public ResponseEntity<String> saveBooks(@RequestBody List<BookDto> books){
         return ResponseEntity.ok().body(bookService.saveBooks(books));
     }
