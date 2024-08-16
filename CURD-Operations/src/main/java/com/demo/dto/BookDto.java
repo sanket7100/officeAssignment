@@ -1,4 +1,4 @@
-package com.demo.DTOs;
+package com.demo.dto;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -16,11 +16,9 @@ public class BookDto {
     private Integer bookId;
 
     @NotBlank(message = "Book Name should not be blank")
-    @NotNull
     private String bookName;
 
     @NotBlank(message = "Auther Name should not be blank")
-    @NotNull
     private String bookAuther;
 
     @Size(min = 0, max = 50, message = "Max limit for discription is 50")

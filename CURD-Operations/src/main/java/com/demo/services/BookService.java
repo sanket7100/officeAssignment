@@ -1,52 +1,45 @@
 package com.demo.services;
 
-import com.demo.DTOs.BookDto;
-import com.demo.Exception.BookNotFoundException;
+import com.demo.dto.BookDto;
+import com.demo.exception.BookAlreadyExistsException;
+import com.demo.exception.BookNotFoundException;
 import com.demo.entities.BookEntity;
 import com.demo.repositories.BookRepository;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Book;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class BookService {
-    @Autowired
-    private BookRepository bookRepository;
-
-    @Autowired
-    private ModelMapper mapper;
+    private final BookRepository bookRepository;
+    private final ModelMapper mapper;
 
     public BookDto saveBook(BookDto bookDto){
-//        BookEntity bookEntity = new BookEntity();
-        BookEntity savedBookEntity =  bookRepository.save(mapper.map(bookDto,BookEntity.class));
-//        BookDto savedBookDto = new BookDto();
-//        BookDto savedBookDto = mapper.map(savedBookEntity,BookDto.class);
-        return mapper.map(savedBookEntity, BookDto.class);
+        if(bookRepository.findById(bookDto.getBookId()).isPresent()) {
+            throw new BookAlreadyExistsException("Book is already present with ID : " + bookDto.getBookId());
+        }
+        return mapper.map(bookRepository.save(mapper.map(bookDto,BookEntity.class)), BookDto.class);
     }
 
     public List<BookDto> getAllBooks(Integer pageno){
         Pageable page = PageRequest.of(pageno, 5);
         List<BookEntity> books = bookRepository.findAll(page).getContent();
-        return books.stream().map(book -> mapper.map(book, BookDto.class)).collect(Collectors.toList());
-//        return Collections.singletonList(mapper.map(books, BookDto.class));
+        return books.stream().map(book -> mapper.map(book, BookDto.class)).toList();
     }
 
-    public BookDto deleteBook(Integer id){
-        BookEntity deletedBook = bookRepository.findById(id).get();
+    public String deleteBook(Integer id){
         bookRepository.deleteById(id);
-        return mapper.map(deletedBook,BookDto.class);
+        return "Book deleted sucessufully...";
     }
 
     public BookDto getBookById(Integer id){
-        Optional<BookEntity> book = bookRepository.findById(id) ;
+        Optional<BookEntity> book = bookRepository.findById(id);
 
         if(book.isEmpty()){
             throw new BookNotFoundException("Book not found with ID: " + id);
@@ -55,7 +48,7 @@ public class BookService {
     }
 
     public BookDto updateBook(BookDto book){
-        BookEntity bookPresent = null;
+        BookEntity bookPresent = new BookEntity();
         Optional<BookEntity> optional = bookRepository.findById(book.getBookId());
         if(optional.isPresent()) {
             bookPresent = optional.get();
@@ -69,5 +62,13 @@ public class BookService {
 
     public List<BookEntity> getBookByTitle(String title) {
         return bookRepository.getBookByTitle(title);
+    }
+
+
+    public String saveBooks(List<BookDto> books) {
+        if(books.isEmpty()) throw new BookNotFoundException("Book list is empty");
+
+        bookRepository.saveAll(books.stream().map(dto->mapper.map(dto,BookEntity.class)).toList());
+        return "Books Saved Successfullyyy";
     }
 }

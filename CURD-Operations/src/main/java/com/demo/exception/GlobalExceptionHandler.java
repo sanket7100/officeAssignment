@@ -1,4 +1,4 @@
-package com.demo.Exception;
+package com.demo.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,5 +19,4 @@ public class GlobalExceptionHandler {
     public  ResponseEntity<Object> handleBookAlreadyExistException(BookAlreadyExistsException exception){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getMessage()) ;
     }
-
 }

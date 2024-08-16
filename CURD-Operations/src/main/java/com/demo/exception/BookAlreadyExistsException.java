@@ -1,4 +1,4 @@
-package com.demo.Exception;
+package com.demo.exception;
 
 public class BookAlreadyExistsException extends RuntimeException {
 
